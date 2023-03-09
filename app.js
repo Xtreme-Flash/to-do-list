@@ -30,16 +30,22 @@ const list3 = new Item({
 
 const defaulItem = [list1, list2, list3];
 
-Item.insertMany(defaulItem);
-
 app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
-app.get("/", function(req, res){
+app.get("/", async function(req, res){
 
-    res.render("list", {listTitle: "Today", newListItems: items});
+    const foundItem = await Item.find({});
+
+    if(foundItem.length === 0){
+        Item.insertMany(defaulItem);
+        res.redirect("/");
+    }
+    else{
+        res.render("list", {listTitle: "Today", newListItems: foundItem});
+    }
 
 });
 
