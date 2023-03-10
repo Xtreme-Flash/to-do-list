@@ -4,8 +4,6 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
-
-
 const app = express();
 
 mongoose.connect("mongodb://localhost:27017/todolistDB");
@@ -50,16 +48,25 @@ app.get("/", async function(req, res){
 });
 
 app.post("/", function(req, res){
-    item = req.body.newItem;
-    if (req.body.list === "work"){
-        workItems.push(item);
-        res.redirect("/work");
-    }
-    else{
-        items.push(item);
-        res.redirect("/");
-    }
-    
+
+    const itemName = req.body.newItem;
+
+    const item = new Item({
+        name: itemName
+    });
+
+    item.save();
+    res.redirect("/");
+});
+
+app.post("/delete", async function(req, res){
+
+    const checkedItemId = req.body.checkbox;
+
+    const deletedItem = await Item.findByIdAndRemove(checkedItemId);
+
+    res.redirect("/");
+
 });
 
 app.get("/work", function(req, res){
